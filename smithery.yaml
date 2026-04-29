@@ -1,0 +1,30 @@
+name: hive-stable-router
+description: "USDC↔USDT stablecoin routing on Base mainnet. 8 bps Hive take. Uniswap v3 USDC/USDT 0.01% pool pricing. Phase 1: quote + ledger."
+version: 1.0.0
+license: MIT
+homepage: https://github.com/srotzin/hive-stable-router
+author:
+  name: Steve Rotzin
+  email: steve@thehiveryiq.com
+
+server:
+  type: http
+  url: https://hive-stable-router.onrender.com/mcp
+
+tools:
+  - name: get_quote
+    description: Get a USDC↔USDT swap quote. Returns rate, 8 bps Hive take, and payment details.
+  - name: swap
+    description: Initiate a USDC↔USDT swap (402-gated). Requires quote_id and recipient_address.
+  - name: get_status
+    description: Retrieve swap status by settlement_id.
+
+tags:
+  - stablecoin
+  - defi
+  - base
+  - usdc
+  - usdt
+  - payments
+  - 402
+  - uniswap

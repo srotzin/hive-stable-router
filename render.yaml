@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: hive-stable-router
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: HMAC_SECRET
+        generateValue: true
+    healthCheckPath: /health
+    autoDeploy: true

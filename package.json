@@ -1,0 +1,33 @@
+{
+  "name": "hive-stable-router",
+  "version": "1.0.0",
+  "description": "USDC↔USDT atomic routing on Base. 8 bps Hive take. Phase 1 MCP server.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "keywords": [
+    "mcp",
+    "stablecoin",
+    "usdc",
+    "usdt",
+    "base",
+    "uniswap",
+    "402",
+    "hive"
+  ],
+  "author": "Steve Rotzin <steve@thehiveryiq.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/srotzin/hive-stable-router.git"
+  }
+}
