@@ -279,7 +279,63 @@ async function buildQuote(from, to, amount) {
   };
 }
 
-app.get('/v1/stable-router/quote', async (req, res) => {
+// ─── BOGO redemption middleware (X-Hive-BOGO-Token) ─────────────────────
+// Phase 1: calls hive-gamification /v1/bogo/redeem; bypasses 402 on consumed:true.
+// Phase 2 (planned): zero-trust redemption with token-bound HMAC.
+async function bogoRedeemMiddleware(req, res, next) {
+  const token = req.headers['x-hive-bogo-token'];
+  if (!token) return next();
+  try {
+    const r = await fetch('https://hive-gamification.onrender.com/v1/bogo/redeem', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, mechanic_id: 'stable-router-quote' }),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (r.ok) {
+      const j = await r.json();
+      if (j.consumed === true) {
+        req._bogo_redeemed = true;
+        import('fs').then(({ appendFileSync }) => {
+          try { appendFileSync('/tmp/stable_router_bogo_redemptions.jsonl', JSON.stringify({ token: token.slice(0, 12), mechanic_id: 'stable-router-quote', ts: Date.now() }) + '\n'); } catch (_) {}
+        });
+        return next();
+      }
+    }
+  } catch (_) {}
+  return next();
+}
+
+// ─── Quote (x402-gated, $0.10 USDC) ─────────────────────────────────
+app.get('/v1/stable-router/quote', bogoRedeemMiddleware, async (req, res) => {
+  // BOGO bypass or check for x402 payment
+  if (!req._bogo_redeemed) {
+    const paymentHeader = req.headers['x-payment'] || req.headers['x-payment-receipt'];
+    if (!paymentHeader) {
+      return res.status(402).json({
+        x402Version: 1,
+        error: 'Payment required',
+        accepts: [{
+          scheme: 'exact',
+          network: 'base',
+          chainId: CHAIN_ID,
+          asset: 'USDC',
+          contract: BASE_USDC,
+          maxAmountRequired: '100000', // $0.10 USDC atomic
+          payTo: MONROE,
+          resource: '/v1/stable-router/quote',
+          description: 'Stable router quote — $0.10 USDC on Base mainnet',
+          mimeType: 'application/json',
+        }],
+        bogo: {
+          first_use_free: true,
+          claim_endpoint: 'https://hive-gamification.onrender.com/v1/bogo/claim',
+          redeem_header: 'X-Hive-BOGO-Token',
+          mechanic_id: 'stable-router-quote',
+        },
+      });
+    }
+  }
   const { from, to, amount } = req.query;
   const result = await buildQuote(from, to, amount);
   if (result.error) return res.status(400).json(result);
