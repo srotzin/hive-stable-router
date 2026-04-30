@@ -152,3 +152,16 @@ The spot rate is queried from the Uniswap v3 USDC/USDT 0.01% pool on Base (`0xd0
 ## Legal
 
 MIT License. Phase 1 is a ledger primitive — not a registered money transmitter, exchange, or broker-dealer. On-chain liquidity routing (Phase 2) will deploy only with appropriate compliance review.
+
+
+---
+
+## Hive Civilization
+
+Hive Civilization is the cryptographic backbone of autonomous agent commerce — the layer that makes every agent transaction provable, every payment settable, and every decision defensible.
+
+This repository is part of the **PROVABLE · SETTABLE · DEFENSIBLE** pillar.
+
+- thehiveryiq.com
+- hiveagentiq.com
+- agent-card: https://hivetrust.onrender.com/.well-known/agent-card.json
